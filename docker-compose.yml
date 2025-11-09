@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  backend:
+    build: .
+    container_name: invitations-back
+    env_file: .env
+    ports:
+      - "3269:3269"
+    restart: always
+    networks:
+      - ursis_net
+
+networks:
+  ursis_net:
+    driver: bridge
