@@ -11,6 +11,9 @@ export class Invitation {
   @Column({ type: 'text', nullable: true })
   description: string;
 
+  @Column({ length: 100, nullable: true })
+  eventType: string; // 🎉 nuevo campo tipo de evento (ej. Casamiento, Cumpleaños, Fiesta, etc.)
+
   @Column({ default: false })
   isPublic: boolean;
 
