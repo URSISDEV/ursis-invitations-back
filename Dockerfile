@@ -19,4 +19,5 @@ COPY .env .env
 RUN npm install --omit=dev
 
 EXPOSE 3269
+ENV NODE_ENV=production
 CMD ["node", "dist/main.js"]
