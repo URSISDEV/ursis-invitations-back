@@ -1,6 +1,9 @@
 import { DataSource } from 'typeorm';
 import { config } from 'dotenv';
-config();
+import { existsSync } from 'fs';
+
+const envFile = existsSync('.env.local') ? '.env.local' : '.env';
+config({ path: envFile });
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
