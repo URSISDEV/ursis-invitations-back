@@ -12,7 +12,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy via SSH
+      - name: Deploy via SSH to VPS
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -35,13 +35,14 @@ jobs:
             sleep 10
 
             echo "📦 Running migrations..."
-            docker exec invitations-back npm run migration:run || {
+            docker exec invitations-back npm run migration:run:prod || {
               echo "❌ Migration failed. Rolling back..."
               docker compose down
               exit 1
             }
 
-            echo "🧹 Cleaning unused images..."
+            echo "🧹 Cleaning unused Docker artifacts..."
             docker image prune -f
+            docker network prune -f
 
             echo "✅ Deploy and migrations complete!"
