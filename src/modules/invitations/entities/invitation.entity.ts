@@ -14,8 +14,11 @@ export class Invitation {
   @Column({ length: 100, nullable: true })
   eventType: string; // 🎉 tipo de evento (Casamiento, Cumpleaños, etc.)
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'date', nullable: true })
   eventDate: Date; // 📅 fecha del evento
+
+  @Column({ type: 'time', nullable: true })
+  eventTime: string; // ⏰ hora del evento (ej. "19:30")
 
   @Column({ default: false })
   isPublic: boolean;
