@@ -29,7 +29,7 @@ export class WhitelistService {
     const userWhitelist = this.userWhitelistRepository.create(createWhitelistDto);
     const savedUser = await this.userWhitelistRepository.save(userWhitelist);
 
-    // Log del registro exitoso
+    // Log del registro exitoso!
     this.logger.logUserRegistration({
       name: savedUser.name,
       email: savedUser.email,
