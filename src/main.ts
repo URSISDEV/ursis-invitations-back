@@ -9,6 +9,21 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Configuración de CORS
+  app.enableCors({
+    origin: [
+      'https://invia.ursis.com.ar',
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:4200',  // Angular dev server
+      'http://localhost:5173',  // Vite dev server
+      'http://localhost:5521'   // Tu frontend actual
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    credentials: true
+  });
+
   // Prefijo global para todos los endpoints
   app.setGlobalPrefix('api');
 
