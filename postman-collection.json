@@ -1,0 +1,1029 @@
+{
+  "info": {
+    "name": "URSIS Invitations API",
+    "description": "Colección completa para probar la API de invitaciones, templates y whitelist\n\n📍 **ENTORNOS DISPONIBLES:**\n• DEV: http://localhost:3269/api\n• PROD: https://ursis.com.ar/invia/api\n\n🚀 **ENDPOINTS INCLUIDOS:**\n• Health Check y API Root\n• CRUD completo de Invitaciones (con templateId, slug, sectionsData)\n• Búsqueda por slug e invitaciones públicas\n• Gestión de estado público/privado\n• **NUEVO:** CRUD completo de Templates (name, url, imageUrl, eventTypeId)\n• **NUEVO:** Filtrado de templates por tipo de evento (ID y slug)\n• **NUEVO:** CRUD completo de Event Types (name, slug, description)\n• **NUEVO:** Gestión de tipos de evento con relaciones\n• Registro y consulta de Whitelist\n\n🔐 **AUTENTICACIÓN:**\n• GET /whitelist requiere Basic Auth\n• Usuario: ursis\n• Password: 159734682Ursis!\n\n⚡ **RATE LIMITING:**\n• POST /whitelist/register: 3 intentos por minuto por IP\n• Otros endpoints: 10 requests por minuto por IP\n• Templates endpoints: Sin límites (acceso público)\n• Usa 'Rate Limit Test' para probar límites\n\n💡 **USO:** \n• Cambia manualmente la variable {{baseUrl}} o usa los endpoints directos\n• Actualiza {{invitationId}} con un ID real después de crear una invitación\n• Actualiza {{templateId}} con un ID real después de crear un template\n• Los slugs deben ser únicos (ej: xv-santino, boda-maria-juan)\n\n🎯 **NUEVAS FUNCIONALIDADES:**\n• Templates dinámicos con templateId\n• URLs públicas: /invitations/public/slug-name\n• Datos estructurados en sectionsData (JSON)\n• Validación de slugs únicos\n• **NUEVO:** Gestión de templates con URLs del frontend\n• **NUEVO:** Filtrado por tipo de evento (xv, boda, cumpleanos, etc.)",
+    "version": "2.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3269/api",
+      "type": "string",
+      "description": "Base URL for the API"
+    },
+    {
+      "key": "invitationId",
+      "value": "REPLACE_WITH_REAL_ID",
+      "type": "string",
+      "description": "ID of an invitation (UUID format). Update this with a real ID after creating an invitation."
+    },
+    {
+      "key": "templateId",
+      "value": "REPLACE_WITH_REAL_TEMPLATE_ID",
+      "type": "string",
+      "description": "ID of a template (UUID format). Update this with a real ID after creating a template."
+    },
+    {
+      "key": "eventTypeId",
+      "value": "REPLACE_WITH_REAL_EVENT_TYPE_ID",
+      "type": "string",
+      "description": "ID of an event type (UUID format). Update this with a real ID after creating an event type."
+    }
+  ],
+  "item": [
+    {
+      "name": "🔧 Environment Setup",
+      "item": [
+        {
+          "name": "🏠 Development - Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3269/api/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3269",
+              "path": ["api", "health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "🌐 Production - Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://ursis.com.ar/invia/api/health",
+              "protocol": "https",
+              "host": ["ursis.com.ar"],
+              "path": ["invia", "api", "health"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🏠 General",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "API Root",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "💌 Invitations",
+      "item": [
+        {
+          "name": "📋 CRUD Operations",
+          "item": [
+            {
+              "name": "Get All Invitations",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/invitations",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["invitations"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Invitation by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/invitations/{{invitationId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["invitations", "{{invitationId}}"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Invitation - XV Años",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"templateId\": \"xv-romantic\",\n  \"slug\": \"xv-santino\",\n  \"title\": \"XV Años de Santino\",\n  \"eventType\": \"XV Años\",\n  \"eventDate\": \"2024-12-15\",\n  \"eventTime\": \"20:00\",\n  \"sectionsUsed\": {\n    \"hero\": \"hero_v2\",\n    \"details\": \"details_v1\",\n    \"gallery\": \"gallery_v1\",\n    \"rsvp\": \"rsvp_basic\"\n  },\n  \"sectionsOrder\": [\n    \"hero_v2\",\n    \"details_v1\",\n    \"gallery_v1\",\n    \"rsvp_basic\"\n  ],\n  \"sectionsData\": {\n    \"hero\": {\n      \"title\": \"XV de Santino\",\n      \"subtitle\": \"¡Celebremos juntos este momento especial!\",\n      \"backgroundImage\": \"xv-bg-1.jpg\"\n    },\n    \"details\": {\n      \"venue\": \"Salón Los Jardines\",\n      \"address\": \"Av. Libertador 1234, Buenos Aires\",\n      \"dressCode\": \"Elegante Sport\"\n    },\n    \"gallery\": {\n      \"images\": []\n    },\n    \"rsvp\": {\n      \"enabled\": true,\n      \"deadline\": \"2024-12-01\",\n      \"phone\": \"+54 9 11 1234-5678\"\n    }\n  },\n  \"isPublic\": false\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/invitations",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["invitations"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Invitation - Wedding",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"templateId\": \"boda-elegante\",\n  \"slug\": \"boda-maria-juan\",\n  \"title\": \"Boda de María y Juan\",\n  \"eventType\": \"Casamiento\",\n  \"eventDate\": \"2024-06-15\",\n  \"eventTime\": \"19:30\",\n  \"sectionsUsed\": {\n    \"hero\": \"hero_wedding_v1\",\n    \"ceremony\": \"ceremony_classic\",\n    \"reception\": \"reception_elegant\",\n    \"rsvp\": \"rsvp_formal\"\n  },\n  \"sectionsOrder\": [\n    \"hero_wedding_v1\",\n    \"ceremony_classic\",\n    \"reception_elegant\",\n    \"rsvp_formal\"\n  ],\n  \"sectionsData\": {\n    \"hero\": {\n      \"title\": \"Boda de María y Juan\",\n      \"subtitle\": \"Te invitamos a celebrar nuestro gran día\",\n      \"coupleNames\": \"María & Juan\",\n      \"backgroundImage\": \"wedding-bg-1.jpg\"\n    },\n    \"ceremony\": {\n      \"venue\": \"Iglesia San José\",\n      \"address\": \"Calle Principal 456, Centro\",\n      \"time\": \"19:30\"\n    },\n    \"reception\": {\n      \"venue\": \"Hotel Plaza\",\n      \"address\": \"Av. 9 de Julio 789, Buenos Aires\",\n      \"time\": \"21:00\"\n    },\n    \"rsvp\": {\n      \"enabled\": true,\n      \"deadline\": \"2024-05-15\",\n      \"email\": \"rsvp@mariajuan.com\"\n    }\n  },\n  \"isPublic\": false\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/invitations",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["invitations"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Invitation - Birthday Party",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"templateId\": \"cumple-divertido\",\n  \"slug\": \"cumple-ana-30\",\n  \"title\": \"Cumpleaños de Ana - 30 años\",\n  \"eventType\": \"Cumpleaños\",\n  \"eventDate\": \"2024-03-22\",\n  \"eventTime\": \"21:00\",\n  \"sectionsUsed\": {\n    \"hero\": \"hero_birthday_v2\",\n    \"party\": \"party_fun\",\n    \"gallery\": \"gallery_polaroid\",\n    \"rsvp\": \"rsvp_whatsapp\"\n  },\n  \"sectionsOrder\": [\n    \"hero_birthday_v2\",\n    \"party_fun\",\n    \"gallery_polaroid\",\n    \"rsvp_whatsapp\"\n  ],\n  \"sectionsData\": {\n    \"hero\": {\n      \"title\": \"Cumpleaños de Ana\",\n      \"subtitle\": \"¡Celebremos juntos mis 30 años!\",\n      \"age\": 30,\n      \"theme\": \"Años 90\",\n      \"backgroundImage\": \"birthday-bg-1.jpg\"\n    },\n    \"party\": {\n      \"venue\": \"Casa de Ana\",\n      \"address\": \"Barrio Norte, Buenos Aires\",\n      \"theme\": \"Fiesta temática años 90\",\n      \"activities\": [\"DJ\", \"Karaoke\", \"Juegos retro\"]\n    },\n    \"gallery\": {\n      \"images\": [],\n      \"style\": \"polaroid\"\n    },\n    \"rsvp\": {\n      \"enabled\": true,\n      \"deadline\": \"2024-03-15\",\n      \"whatsapp\": \"+54 9 11 9876-5432\"\n    }\n  },\n  \"isPublic\": true\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/invitations",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["invitations"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Invitation",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"XV Años de Santino - ACTUALIZADO\",\n  \"eventTime\": \"20:30\",\n  \"sectionsUsed\": {\n    \"hero\": \"hero_v3\",\n    \"details\": \"details_v2\",\n    \"gallery\": \"gallery_v1\",\n    \"rsvp\": \"rsvp_advanced\"\n  },\n  \"sectionsOrder\": [\n    \"hero_v3\",\n    \"details_v2\",\n    \"gallery_v1\",\n    \"rsvp_advanced\"\n  ],\n  \"sectionsData\": {\n    \"hero\": {\n      \"title\": \"XV de Santino\",\n      \"subtitle\": \"¡Celebremos juntos este momento especial! - ACTUALIZADO\",\n      \"backgroundImage\": \"xv-bg-2.jpg\"\n    },\n    \"details\": {\n      \"venue\": \"Salón Los Jardines - Salón Principal\",\n      \"address\": \"Av. Libertador 1234, Buenos Aires\",\n      \"dressCode\": \"Elegante Sport\",\n      \"parking\": \"Estacionamiento gratuito disponible\"\n    },\n    \"gallery\": {\n      \"images\": [\"photo1.jpg\", \"photo2.jpg\"]\n    },\n    \"rsvp\": {\n      \"enabled\": true,\n      \"deadline\": \"2024-11-25\",\n      \"phone\": \"+54 9 11 1234-5678\",\n      \"email\": \"rsvp@xvsantino.com\"\n    }\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/invitations/{{invitationId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["invitations", "{{invitationId}}"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Invitation",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/invitations/{{invitationId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["invitations", "{{invitationId}}"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "🔍 Search & Public Access",
+          "item": [
+            {
+              "name": "Get Invitation by Slug",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/invitations/slug/xv-santino",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["invitations", "slug", "xv-santino"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Public Invitation by Slug",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/invitations/public/cumple-ana-30",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["invitations", "public", "cumple-ana-30"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Public Invitation - Not Found (Error Test)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/invitations/public/invitation-not-exists",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["invitations", "public", "invitation-not-exists"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "⚙️ Management Operations",
+          "item": [
+            {
+              "name": "Toggle Public Status",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/invitations/{{invitationId}}/toggle-public",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["invitations", "{{invitationId}}", "toggle-public"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "❌ Error Tests",
+          "item": [
+            {
+              "name": "Create Invitation - Duplicate Slug (Error Test)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"templateId\": \"xv-romantic\",\n  \"slug\": \"xv-santino\",\n  \"title\": \"Otra invitación con el mismo slug\",\n  \"eventType\": \"XV Años\",\n  \"eventDate\": \"2024-12-20\",\n  \"eventTime\": \"19:00\",\n  \"isPublic\": false\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/invitations",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["invitations"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Invitation by ID - Not Found (Error Test)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/invitations/00000000-0000-0000-0000-000000000000",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["invitations", "00000000-0000-0000-0000-000000000000"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Invitation - Not Found (Error Test)",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Invitación que no existe\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/invitations/00000000-0000-0000-0000-000000000000",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["invitations", "00000000-0000-0000-0000-000000000000"]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🎨 Templates",
+      "item": [
+        {
+          "name": "📋 CRUD Operations",
+          "item": [
+            {
+              "name": "Get All Templates",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/templates",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["templates"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Template by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/templates/{{templateId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["templates", "{{templateId}}"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Template - XV Romántico",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"XV Romántico\",\n  \"url\": \"/plantilla/xv-romantico\",\n  \"imageUrl\": \"https://example.com/images/xv-romantico-preview.jpg\",\n  \"eventTypeId\": \"{{eventTypeId}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/templates",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["templates"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Template - Boda Elegante",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Boda Elegante\",\n  \"url\": \"/plantilla/boda-elegante\",\n  \"imageUrl\": \"https://example.com/images/boda-elegante-preview.jpg\",\n  \"eventTypeId\": \"{{eventTypeId}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/templates",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["templates"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Template - Cumpleaños Divertido",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Cumpleaños Divertido\",\n  \"url\": \"/plantilla/cumple-divertido\",\n  \"imageUrl\": \"https://example.com/images/cumple-divertido-preview.jpg\",\n  \"eventType\": \"cumpleanos\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/templates",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["templates"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Template - Baby Shower",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Baby Shower Tierno\",\n  \"url\": \"/plantilla/baby-shower\",\n  \"imageUrl\": \"https://example.com/images/baby-shower-preview.jpg\",\n  \"eventType\": \"baby-shower\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/templates",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["templates"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Template",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"XV Romántico - ACTUALIZADO\",\n  \"url\": \"/plantilla/xv-romantico-v2\",\n  \"imageUrl\": \"https://example.com/images/xv-romantico-v2-preview.jpg\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/templates/{{templateId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["templates", "{{templateId}}"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Template",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/templates/{{templateId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["templates", "{{templateId}}"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "🔍 Filter by Event Type",
+          "item": [
+            {
+              "name": "Get Templates by Event Type ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/templates/event-type-id/{{eventTypeId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["templates", "event-type-id", "{{eventTypeId}}"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Templates - XV Años (by slug)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/templates/event-type/xv",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["templates", "event-type", "xv"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Templates - Bodas",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/templates/event-type/boda",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["templates", "event-type", "boda"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Templates - Cumpleaños",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/templates/event-type/cumpleanos",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["templates", "event-type", "cumpleanos"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Templates - Baby Shower",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/templates/event-type/baby-shower",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["templates", "event-type", "baby-shower"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Templates - Graduación",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/templates/event-type/graduacion",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["templates", "event-type", "graduacion"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "❌ Error Tests",
+          "item": [
+            {
+              "name": "Get Template by ID - Not Found (Error Test)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/templates/00000000-0000-0000-0000-000000000000",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["templates", "00000000-0000-0000-0000-000000000000"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Template - Not Found (Error Test)",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Template que no existe\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/templates/00000000-0000-0000-0000-000000000000",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["templates", "00000000-0000-0000-0000-000000000000"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Templates - Invalid Event Type",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/templates/event-type/evento-inexistente",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["templates", "event-type", "evento-inexistente"]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🎯 Event Types",
+      "item": [
+        {
+          "name": "📋 CRUD Operations",
+          "item": [
+            {
+              "name": "Get All Event Types",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/event-types",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["event-types"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Active Event Types",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/event-types/active",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["event-types", "active"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Event Type by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/event-types/{{eventTypeId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["event-types", "{{eventTypeId}}"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Event Type by Slug",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/event-types/slug/xv",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["event-types", "slug", "xv"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Event Type - Quinceañera",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Quinceañera\",\n  \"slug\": \"quinceañera\",\n  \"description\": \"Celebración de los quince años con estilo único\",\n  \"isActive\": true\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/event-types",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["event-types"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Event Type - Despedida de Soltera",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Despedida de Soltera\",\n  \"slug\": \"despedida-soltera\",\n  \"description\": \"Celebración antes de la boda\",\n  \"isActive\": true\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/event-types",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["event-types"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Event Type",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"XV Años - ACTUALIZADO\",\n  \"description\": \"Celebración especial de los quince años - Descripción actualizada\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/event-types/{{eventTypeId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["event-types", "{{eventTypeId}}"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Event Type",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/event-types/{{eventTypeId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["event-types", "{{eventTypeId}}"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "❌ Error Tests",
+          "item": [
+            {
+              "name": "Get Event Type by ID - Not Found (Error Test)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/event-types/00000000-0000-0000-0000-000000000000",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["event-types", "00000000-0000-0000-0000-000000000000"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Event Type - Duplicate Slug (Error Test)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Otro XV\",\n  \"slug\": \"xv\",\n  \"description\": \"Esto debería fallar por slug duplicado\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/event-types",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["event-types"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Event Type with Templates (Error Test)",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/event-types/{{eventTypeId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["event-types", "{{eventTypeId}}"]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "📝 Whitelist",
+      "item": [
+        {
+          "name": "Get All Whitelist Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "ursis",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "159734682Ursis!",
+                  "type": "string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/whitelist",
+              "host": ["{{baseUrl}}"],
+              "path": ["whitelist"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Whitelist Users - No Auth (Error Test)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/whitelist",
+              "host": ["{{baseUrl}}"],
+              "path": ["whitelist"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register - Event Organizer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Carlos Mendoza\",\n  \"email\": \"carlos.mendoza@example.com\",\n  \"interestReason\": \"Soy organizador de eventos corporativos y me interesa crear invitaciones profesionales para conferencias y seminarios\",\n  \"isEventOrganizer\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/whitelist/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["whitelist", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register - Wedding Planner",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sofia Rodriguez\",\n  \"email\": \"sofia.wedding@example.com\",\n  \"interestReason\": \"Trabajo como wedding planner y necesito crear invitaciones elegantes y personalizadas para bodas de lujo\",\n  \"isEventOrganizer\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/whitelist/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["whitelist", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register - Personal User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ana García\",\n  \"email\": \"ana.garcia@example.com\",\n  \"interestReason\": \"Quiero crear invitaciones bonitas para el cumpleaños de mi hija y otras celebraciones familiares\",\n  \"isEventOrganizer\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/whitelist/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["whitelist", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register - Duplicate Email (Error Test)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Otro Usuario\",\n  \"email\": \"ana.garcia@example.com\",\n  \"interestReason\": \"Esto debería fallar por email duplicado\",\n  \"isEventOrganizer\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/whitelist/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["whitelist", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register - Party Organizer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Miguel Torres\",\n  \"email\": \"miguel.party@example.com\",\n  \"interestReason\": \"Organizo fiestas temáticas y eventos sociales, me interesa crear invitaciones creativas y divertidas\",\n  \"isEventOrganizer\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/whitelist/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["whitelist", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Rate Limit Test - Multiple Registrations",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Rate Limit\",\n  \"email\": \"test{{$randomInt}}@ratelimit.com\",\n  \"interestReason\": \"Testing rate limiting functionality - attempt {{$randomInt}}\",\n  \"isEventOrganizer\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/whitelist/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["whitelist", "register"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

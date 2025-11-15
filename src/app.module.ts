@@ -6,6 +6,8 @@ import { AppController } from './app.controller';
 import { DatabaseModule } from './database/database.module';
 import { InvitationsModule } from './modules/invitations/invitations.module';
 import { WhitelistModule } from './modules/whitelist/whitelist.module';
+import { TemplatesModule } from './modules/templates/templates.module';
+import { EventTypesModule } from './modules/event-types/event-types.module';
 import { LoggerModule } from './common/logger/logger.module';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { ThrottleLoggingInterceptor } from './common/interceptors/throttle-logging.interceptor';
@@ -31,6 +33,8 @@ import { ThrottleLoggingInterceptor } from './common/interceptors/throttle-loggi
     }),
     InvitationsModule,
     WhitelistModule,
+    TemplatesModule,
+    EventTypesModule,
   ],
   controllers: [AppController],
   providers: [
