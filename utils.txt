@@ -1,0 +1,7 @@
+GENERAR MIGRACIONES
+
+$ npm run migration:generate ./src/migrations/CreateInvitationsTable
+
+CORRER MIGRACIONES
+
+migration:run:dev

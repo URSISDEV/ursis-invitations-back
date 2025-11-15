@@ -1,0 +1,304 @@
+🎯 FLUJO COMPLETO – DE ELEGIR TEMPLATE → RENDER FINAL
+
+Te lo separo en:
+
+UX del usuario
+
+Qué hace el FRONT
+
+Qué hace el BACK
+
+Esto es EXACTAMENTE como debe funcionar.
+
+🟦 1) EL USUARIO ENTRA Y ELIGE UNA PLANTILLA
+
+Ejemplo: “Plantilla XV – Romantic”
+
+🧑‍💻 Usuario
+
+Ve una galería de plantillas.
+
+Hace click en “Usar esta plantilla”.
+
+🌐 Front
+
+El front carga el JSON del template base desde /public/templates.
+
+Ejemplo de template base:
+
+{
+  "templateId": "xv-romantic",
+  "defaultSections": ["hero_v1", "details_v1", "gallery_v1", "rsvp_basic"],
+  "sectionsData": {
+    "hero": {
+      "title": "Mis XV",
+      "subtitle": "¡Un día especial!",
+      "backgroundImage": "default.jpg"
+    },
+    "details": {
+      "venue": "",
+      "address": "",
+      "dressCode": ""
+    },
+    "rsvp": {
+      "enabled": true,
+      "deadline": "",
+      "phone": ""
+    }
+  }
+}
+
+
+El front crea un estado inicial:
+
+const invitationDraft = {
+  templateId: "xv-romantic",
+  slug: "",
+  eventDate: null,
+  eventTime: null,
+  sectionsUsed: {
+    hero: "hero_v1",
+    details: "details_v1",
+    gallery: "gallery_v1",
+    rsvp: "rsvp_basic"
+  },
+  sectionsOrder: ["hero_v1", "details_v1", "gallery_v1", "rsvp_basic"],
+  sectionsData: { ...template.sectionsData }
+};
+
+
+✔ Nada se guarda en el backend todavía.
+✔ Esto está sólo en el front.
+
+🗄️ Back
+
+Todavía NADA.
+El back no se usa hasta que el usuario guarda.
+
+🟪 2) EL USUARIO COMPLETA EL WIZARD (datos del evento)
+🧑‍💻 Usuario
+
+Completa pantallas tipo:
+
+Nombre del evento
+
+Fecha
+
+Hora
+
+Dirección
+
+Nombre de la quinceañera
+
+Teléfono RSVP
+
+🌐 Front
+
+Cada que completa un paso del wizard, se actualiza el invitationDraft en memoria:
+
+invitationDraft.sectionsData.hero.title = "XV de Santino";
+invitationDraft.eventDate = "2025-03-01";
+invitationDraft.slug = "xv-santino";
+
+
+Pero todavía NO se guarda en el backend.
+
+🗄️ Back
+
+Aún nada.
+
+🟧 3) EL USUARIO QUIERE CAMBIAR UNA SECCIÓN
+
+Ejemplo:
+"Este Hero no me convence… quiero usar hero_v2"
+
+🧑‍💻 Usuario
+
+Desde el builder elige:
+
+Cambiar sección → Hero v2
+
+🌐 Front
+
+El front hace:
+
+Cambia sectionsUsed.hero:
+
+invitationDraft.sectionsUsed.hero = "hero_v2";
+
+
+Cambia sectionsOrder (si hace falta):
+
+invitationDraft.sectionsOrder[0] = "hero_v2";
+
+
+Mantiene la DATA del hero:
+
+Si ambas comparten la misma estructura, sigue igual:
+
+invitationDraft.sectionsData.hero = {
+  title: "XV de Santino",
+  backgroundImage: "custom.jpg"
+};
+
+
+El builder vuelve a renderizar usando:
+
+const Component = sectionsRegistry["hero_v2"];
+<Component data={invitationDraft.sectionsData.hero} />
+
+🗄️ Back
+
+Aún nada.
+
+TODAVÍA NO SE GUARDA NADA.
+
+🟩 4) EL USUARIO TERMINA EL WIZARD Y GUARDA
+
+Hace click en:
+
+✔ “Generar Invitación”
+✔ “Guardar y Publicar”
+
+🌐 Front → Back
+
+El front manda al backend un JSON COMPLETAMENTE ARMADO:
+
+{
+  "templateId": "xv-romantic",
+  "slug": "xv-santino",
+  "title": "XV Años de Santino",
+  "eventDate": "2025-03-01",
+  "eventTime": "20:00",
+  "eventType": "XV Años",
+
+  "sectionsUsed": {
+    "hero": "hero_v2",
+    "details": "details_v1",
+    "gallery": "gallery_v1",
+    "rsvp": "rsvp_basic"
+  },
+
+  "sectionsOrder": [
+    "hero_v2",
+    "details_v1",
+    "gallery_v1",
+    "rsvp_basic"
+  ],
+
+  "sectionsData": {
+    "hero": {
+      "title": "XV de Santino",
+      "subtitle": "Celebramos juntos",
+      "backgroundImage": "custom.jpg"
+    },
+    "details": {
+      "venue": "Salon Azul",
+      "address": "Av Libertador 1000",
+      "dressCode": "Elegante"
+    },
+    "gallery": { "images": [] },
+    "rsvp": { "enabled": true, "phone": "123" }
+  }
+}
+
+🗄️ Back
+
+El backend guarda TODO en una sola entidad Invitation:
+
+Campo	Tipo	Contenido
+templateId	string	"xv-romantic"
+slug	string	"xv-santino"
+sectionsUsed	JSONB	IDs de secciones
+sectionsOrder	JSONB	orden de las secciones
+sectionsData	JSONB	todos los textos e imágenes
+
+El back NO tiene que saber cómo funciona hero_v2, hero_v3, etc.
+
+🟦 5) EL USUARIO COMPARTE LA URL FINAL
+
+URL dinámica:
+
+invia.com.ar/invitations/xv-santino
+
+🌐 Front
+
+Tu archivo:
+
+pages/invitations/[slug].tsx
+
+
+Hace:
+
+Fetch al backend: GET /invitations/xv-santino
+
+El back devuelve la invitación con TODA la data.
+
+El front hace:
+
+invitation.sectionsOrder.map(sectionId => {
+  const Component = sectionsRegistry[sectionId];
+  const base = sectionId.split("_")[0]; 
+  const data = invitation.sectionsData[base];
+  return <Component key={sectionId} data={data} />;
+});
+
+
+🟩 Se renderiza hero_v2
+🟩 Se renderiza details_v1
+🟩 Se renderiza gallery_v1
+🟩 Se renderiza rsvp_basic
+
+¡Listo!
+
+🟧 6) ¿Y si después cambia una sección?
+
+Ejemplo:
+
+"Ahora quiero hero_v3"
+
+El usuario entra al builder → cambia → guarda.
+Se actualiza solo:
+
+sectionsUsed.hero = "hero_v3"
+sectionsOrder[0] = "hero_v3"
+
+
+El usuario recarga la invitación
+→ Aparece otro Hero distinto, con la misma data.
+
+🟩 RESUMEN FINAL (ULTRA CLARO)
+🔵 Front
+
+carga template base
+
+hace wizard
+
+permite cambiar secciones (hero_v1 → hero_v2)
+
+renderiza según sectionsRegistry
+
+manda un JSON final al backend
+
+🔴 Back
+
+guarda JSONB con:
+
+sectionsUsed
+
+sectionsOrder
+
+sectionsData
+
+no tiene lógica de templates
+
+no sabe cómo se llama hero_v2 por dentro
+
+🟣 Invitación pública
+
+Next.js recupera el invite
+
+recorre sectionsOrder
+
+renderiza cada sección según sectionId
+→ usando el registro del front
